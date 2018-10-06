@@ -1,7 +1,7 @@
 
 // exports = {messages: 'hi'};
-var m = {results: ['hi', 'whatever']};
-exports.m = m;
+var msgs = [{username: "Angela", text: "hi"}];
+exports.msgs = msgs;
   
   //   username: 'Mel Brooks',
   //   text: 'It\'s good to be the king',

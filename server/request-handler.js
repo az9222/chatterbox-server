@@ -39,19 +39,26 @@ this file and include it in basic-server.js so that it actually works.
 var messages = require('/Users/student/Desktop/hrsf104-chatterbox-server/server/classes/messages.js');
 
 exports.requestHandler = function(request, response) {
-  
-  console.log(messages.m);
+console.log(messages[0]);
   if (request.method === 'GET' && request.url === '/classes/messages') {
     console.log('Serving request type ' + request.method + ' for url ' + request.url);
     response.writeHead(200, {'Content-Type': 'application/json'});
-    response.end(JSON.stringify(messages.m));
+    response.end(JSON.stringify({results: messages.msgs}));
+  } else if (request.method === 'POST') {
+    request.on('data', function(message) {
+      message = JSON.parse(message);
+      messages.msgs.unshift(message);
+    });
+    request.on('end', function () {
+      response.writeHead(201, {'Content-Type': 'application/json'});
+      response.end(JSON.stringify(messages.msgs));
+    });
   } else {
-    response.writeHead(404, {'Content-Type': 'application/json'});
-    console.log("error");
-  }
-  
-  if (request.method === 'POST' && request.url === '/classes/messages') {
-    
+    // return response.status(404).send("error");
+    // response.writeHead(404, {'Content-Type': 'application/json'});
+    // console.log("error");
+    response.statusCode = 404;
+    response.end();
   }
 };
 
