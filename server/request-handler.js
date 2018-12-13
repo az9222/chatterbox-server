@@ -11,83 +11,59 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-// var messages = require('./classes/messages.js');
 
-// exports.requestHandler = function(request, response) {
-//   console.log(request.url);
-//   if (request.method === 'GET' && request.url === '/') {
-//     if (err) {
-//       response.writeHead(404, {'Content-Type': 'application/json'});
-//       console.log(err);
-//     } else {      
-//       console.log('Serving request type ' + request.method + ' for url ' + request.url);
-//       response.writeHead(200, {'Content-Type': 'application/json'});
-//       response.end(JSON.stringify(messages));
-//     }
-//   }
-// };
+var requestHandler = function(request, response) {
+  // Request and Response come from node's http module.
+  //
+  // They include information about both the incoming request, such as
+  // headers and URL, and about the outgoing response, such as its status
+  // and content.
+  //
+  // Documentation for both request and response can be found in the HTTP section at
+  // http://nodejs.org/documentation/api/
 
-// var defaultCorsHeaders = {
-//   'access-control-allow-origin': '*',
-//   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-//   'access-control-allow-headers': 'content-type, accept',
-//   'access-control-max-age': 10 // Seconds.
-// };
+  // Do some basic logging.
+  //
+  // Adding more logging to your server can be an easy way to get passive
+  // debugging help, but you should always be careful about leaving stray
+  // console.logs in your code.
+  console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
-////////////////////
+  // The outgoing status.
+  var statusCode = 200;
 
-var messages = require('/Users/student/Desktop/hrsf104-chatterbox-server/server/classes/messages.js');
+  // See the note below about CORS headers.
+  var headers = defaultCorsHeaders;
 
-// exports.requestHandler = function(request, response) {
-// console.log(messages[0]);
-//   if (request.method === 'GET' && request.url === '/classes/messages') {
-//     console.log('Serving request type ' + request.method + ' for url ' + request.url);
-//     response.writeHead(200, {'Content-Type': 'application/json'});
-//     response.end(JSON.stringify({results: messages.msgs}));
-//   } else if (request.method === 'POST') {
-//     request.on('data', function(message) {
-//       message = JSON.parse(message);
-//       messages.msgs.unshift(message);
-//     });
-//     request.on('end', function () {
-//       response.writeHead(201, {'Content-Type': 'application/json'});
-//       response.end(JSON.stringify(messages.msgs));
-//     });
-//   } else {
-//     // return response.status(404).send("error");
-//     // response.writeHead(404, {'Content-Type': 'application/json'});
-//     // console.log("error");
-//     response.statusCode = 404;
-//     response.end();
-//   }
-// };
+  // Tell the client we are sending them plain text.
+  //
+  // You will need to change this if you are sending something
+  // other than plain text, like JSON or HTML.
+  headers['Content-Type'] = 'text/plain';
 
-exports.requestHandler = function(request, response) {
-// console.log(messages[0]);
-  if (request.url === '/classes/messages') {
-    if (request.method === 'GET') {
-      console.log('Serving request type ' + request.method + ' for url ' + request.url);
-      response.writeHead(200, {'Content-Type': 'application/json'});
-      response.end(JSON.stringify({results: messages.msgs}));
-    } else if (request.method === 'POST') {
-      request.on('data', function(message) {
-        message = JSON.parse(message);
-        messages.msgs.unshift(message);
-      });
-      request.on('end', function () {
-        response.writeHead(201, {'Content-Type': 'application/json'});
-        response.end(JSON.stringify(messages.msgs));
-      });
-    }
-  } else {
-    // console.log("error");
-    response.statusCode = 404;
-    response.writeHead(404, {'Content-Type': 'application/json'});
-    response.end();
-  }
+  // .writeHead() writes to the request line and headers of the response,
+  // which includes the status and all headers.
+  response.writeHead(statusCode, headers);
+
+  // Make sure to always call response.end() - Node may not send
+  // anything back to the client until you do. The string you pass to
+  // response.end() will be the body of the response - i.e. what shows
+  // up in the browser.
+  //
+  // Calling .end "flushes" the response's internal buffer, forcing
+  // node to actually send all the data over to the client.
+  response.end('Hello, World!');
 };
 
-
+// These headers will allow Cross-Origin Resource Sharing (CORS).
+// This code allows this server to talk to websites that
+// are on different domains, for instance, your chat client.
+//
+// Your chat client is running from a url like file://your/chat/client/index.html,
+// which is considered a different domain.
+//
+// Another way to get around this restriction is to serve you chat
+// client from this domain by setting up static file serving.
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -95,63 +71,3 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
-
-// exports.requestHandler = function(request, response) {
-  
-//   // Request and Response come from node's http module.
-//   //
-//   // They include information about both the incoming request, such as
-//   // headers and URL, and about the outgoing response, such as its status
-//   // and content.
-//   //
-//   // Documentation for both request and response can be found in the HTTP section at
-//   // http://nodejs.org/documentation/api/
-
-//   // Do some basic logging.
-//   //
-//   // Adding more logging to your server can be an easy way to get passive
-//   // debugging help, but you should always be careful about leaving stray
-//   // console.logs in your code.
-//   console.log('Serving request type ' + request.method + ' for url ' + request.url);
-
-//   // The outgoing status.
-//   var statusCode = 200;
-
-//   // See the note below about CORS headers.
-//   var headers = defaultCorsHeaders;
-
-//   // Tell the client we are sending them plain text.
-//   //
-//   // You will need to change this if you are sending something
-//   // other than plain text, like JSON or HTML.
-//   headers['Content-Type'] = 'text/plain';
-
-//   // .writeHead() writes to the request line and headers of the response,
-//   // which includes the status and all headers.
-//   response.writeHead(statusCode, headers);
-
-//   // Make sure to always call response.end() - Node may not send
-//   // anything back to the client until you do. The string you pass to
-//   // response.end() will be the body of the response - i.e. what shows
-//   // up in the browser.
-//   //
-//   // Calling .end "flushes" the response's internal buffer, forcing
-//   // node to actually send all the data over to the client.
-//   response.end('Hello, Worltyvd!');
-// };
-
-// // These headers will allow Cross-Origin Resource Sharing (CORS).
-// // This code allows this server to talk to websites that
-// // are on different domains, for instance, your chat client.
-// //
-// // Your chat client is running from a url like file://your/chat/client/index.html,
-// // which is considered a different domain.
-// //
-// // Another way to get around this restriction is to serve you chat
-// // client from this domain by setting up static file serving.
-// var defaultCorsHeaders = {
-//   'access-control-allow-origin': '*',
-//   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-//   'access-control-allow-headers': 'content-type, accept',
-//   'access-control-max-age': 10 // Seconds.
-// };
